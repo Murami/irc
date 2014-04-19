@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:04:36 2014 guerot_a
-** Last update Sat Apr 19 15:23:35 2014 guerot_a
+** Last update Sat Apr 19 16:01:42 2014 guerot_a
 */
 
 #include <stdio.h>
@@ -37,7 +37,7 @@ int		find_empty_channel(server_t* server)
 	return (i);
       i++;
     }
-  return (i);
+  return (-1);
 }
 
 int		find_empty_user(channel_t* channel)
@@ -128,8 +128,9 @@ void	add_channel(server_t* server, char* channel_name)
 {
   int	empty_channel;
 
-  if (empty_channel = find_empty_channel(server) != -1)
+  if ((empty_channel = find_empty_channel(server)) != -1)
     {
+      printf("%d\n", empty_channel);
       server->s_channels[empty_channel] = create_channel(channel_name);
     }
   else
@@ -164,6 +165,7 @@ void	init_server(server_t* server, short port)
   server->s_socket_max = server->s_socket;
 
   /* Others */
+  server->s_channel_capacity = 0;
   server->s_channel_amount = 0;
   server->s_channels = NULL;
   server->s_unregistered_amount = 0;
@@ -348,9 +350,86 @@ void	manage_io_sockets(server_t* server, socketset_t* sets)
     ;
 }
 
+void manage_nickname_unregistered(server, request, socket_id)
+{
+  printf("nick (ta mere)\n");
+}
+
+void manage_list_unregistered(server, request, socket_id)
+{
+  printf("list\n");
+}
+
+void manage_join_unregistered(server, request, socket_id)
+{
+  printf("join de shit\n");
+}
+
+void manage_part_unregistered(server, request, socket_id)
+{
+  printf("part ouze\n");
+}
+
+void manage_users_unregistered(server, request, socket_id)
+{
+  printf("users\n");
+}
+
+void manage_msg_unregistered(server, request, socket_id)
+{
+  printf("msg\n");
+}
+
+void manage_msg_all_unregistered(server, request, socket_id)
+{
+  printf("msg all\n");
+}
+
+void manage_send_file_unregistered(server, request, socket_id)
+{
+  printf("send file\n");
+}
+
+void manage_accept_file_unregistered(server, request, socket_id)
+{
+  printf("accept file\n");
+}
+
 void	manage_request_unregistered(server_t* server, request_t* request, int socket_id)
 {
-
+  printf("%d\n", request->r_type);
+  switch (request->r_type)
+    {
+    case REQ_NICK:
+      manage_nickname_unregistered(server, request, socket_id);
+      break;
+    case REQ_LIST:
+      manage_list_unregistered(server, request, socket_id);
+      break;
+    case REQ_JOIN:
+      manage_join_unregistered(server, request, socket_id);
+      break;
+    case REQ_PART:
+      manage_part_unregistered(server, request, socket_id);
+      break;
+    case REQ_USERS:
+      manage_users_unregistered(server, request, socket_id);
+      break;
+    case REQ_MSG:
+      manage_msg_unregistered(server, request, socket_id);
+      break;
+    case REQ_MSG_ALL:
+      manage_msg_all_unregistered(server, request, socket_id);
+      break;
+    case REQ_SEND_FILE:
+      manage_send_file_unregistered(server, request, socket_id);
+      break;
+    case REQ_ACCEPT_FILE:
+      manage_accept_file_unregistered(server, request, socket_id);
+      break;
+    default:
+      return;
+    }
 }
 
 void	manage_server_datas(server_t* server)
@@ -387,5 +466,6 @@ int	main(int argc, char **argv)
 			    NULL, NULL);
       manage_io_sockets(&server, &sets);
       manage_server_datas(&server);
+      usleep(100);
     }
 }

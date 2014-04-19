@@ -5,7 +5,7 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Sat Apr 19 10:05:36 2014 pinon
-** Last update Sat Apr 19 13:41:14 2014 guerot_a
+** Last update Sat Apr 19 15:59:39 2014 guerot_a
 */
 
 #include <string.h>
@@ -47,11 +47,14 @@ int	parse_request(sockstream_t* stream, request_t* request)
   while ((request->r_buffer[i] == ' ' || request->r_buffer[i] == '\t')
 	 && i < stream->ss_read_size)
     i++;
+  printf("%d --> %c\n", i, request->r_buffer[i]);
   if (request->r_buffer[i] == '/')
     while (pairs[j].cmd != NULL)
       {
-	if (!strncmp(pairs[j].cmd, request->r_buffer + i, strlen(pairs[j].cmd))
-	    && request->r_buffer[i + strlen(pairs[j].cmd) + 1] == ' ')
+	if (request->r_type == REQ_NONE
+	    && !strncmp(pairs[j].cmd, request->r_buffer + i, strlen(pairs[j].cmd))
+	    && (request->r_buffer[i + strlen(pairs[j].cmd)] == ' '
+		|| request->r_buffer[i + strlen(pairs[j].cmd)] == '\n'))
 	  request->r_type = pairs[j].req;
 	j++;
       }
