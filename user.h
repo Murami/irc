@@ -1,15 +1,19 @@
 /*
 ** user.h for  in /home/pinon_a/rendu/PSU_2013_myirc
-** 
+**
 ** Made by pinon
 ** Login   <pinon_a@epitech.net>
-** 
+**
 ** Started on  Fri Apr 18 13:37:02 2014 pinon
-** Last update Fri Apr 18 14:21:33 2014 pinon
+** Last update Fri Apr 18 15:23:06 2014 guerot_a
 */
 
-#ifnedf USER_H_
+#ifndef USER_H_
 # define USER_H_
+
+# include "sockstream.h"
+
+# define	U_NAME_SIZE 128
 
 typedef struct  user_s
 {
