@@ -5,9 +5,10 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:04:36 2014 guerot_a
-** Last update Sat Apr 19 09:38:36 2014 guerot_a
+** Last update Sat Apr 19 10:21:56 2014 guerot_a
 */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -20,6 +21,7 @@
 
 #include "server.h"
 #include "socketset.h"
+#include "request.h"
 
 void	init_server(server_t* server, short port)
 {
@@ -37,14 +39,13 @@ void	init_server(server_t* server, short port)
        (struct sockaddr*)&address,
        sizeof(struct sockaddr_in));
   listen(server->s_socket, 42);
-  server->s_max = server->s_socket;
-  /* ioctlsocket(server->s_socket, FIONBIO, &argp); */
-  /* fcntl(server->s_socket, O_NONBLOCK); */
+  server->s_socket_max = server->s_socket;
 
   /* Others */
   server->s_channel_amount = 0;
   server->s_channels = NULL;
   server->s_unregistered_amount = 0;
+  server->s_unregistered_capacity = 0;
   server->s_unregistered_sockets = NULL;
 }
 
@@ -55,19 +56,17 @@ void	refresh_socket_sets(server_t* server, socketset_t* sets)
 
   /* reset */
   FD_ZERO(&sets->ss_read_set);
-  /* FD_ZERO(&sets->ss_write_set); */
-  /* FD_ZERO(&sets->ss_except_set); */
+  FD_ZERO(&sets->ss_write_set);
   sets->ss_size = 0;
 
-  /* /\* unregistered *\/ */
-  /* i = 0; */
-  /* while (i < server->s_unregistered_amount) */
-  /*   { */
-  /*     FD_SET(server->s_unregistered_sockets[i].ss_socket, &sets->ss_read_set); */
-  /*     FD_SET(server->s_unregistered_sockets[i].ss_socket, &sets->ss_write_set); */
-  /*     FD_SET(server->s_unregistered_sockets[i].ss_socket, &sets->ss_except_set); */
-  /*     i++; */
-  /*   } */
+  /* unregistered */
+  i = 0;
+  while (i < server->s_unregistered_amount)
+    {
+      FD_SET(server->s_unregistered_sockets[i].ss_socket, &sets->ss_read_set);
+      FD_SET(server->s_unregistered_sockets[i].ss_socket, &sets->ss_write_set);
+      i++;
+    }
 
   /* /\* users in chans *\/ */
   /* i = 0; */
@@ -89,8 +88,7 @@ void	refresh_socket_sets(server_t* server, socketset_t* sets)
 
   /* listen socket */
   FD_SET(server->s_socket,  &sets->ss_read_set);
-  /* FD_SET(server->s_socket,  &sets->ss_write_set); */
-  /* FD_SET(server->s_socket,  &sets->ss_except_set); */
+  FD_SET(server->s_socket,  &sets->ss_write_set);
   sets->ss_size++;
 }
 
@@ -143,20 +141,23 @@ void	accept_client(server_t* server)
   int		client_sock;
 
   client_sock = accept(server->s_socket, NULL, NULL);
-  printf("a client have just connected !\n");
-  server->s_socket_max = MAX(client_sock, server->s_max);
-  init_sockstream(&client_stream, client_sock);
-
-  /* we find an empty emplacement */
+  printf("a client have just connected !\n");/* DBG LINE */
+  server->s_socket_max = MAX(client_sock, server->s_socket_max);
   if ((empty_unregistered = find_empty_unregistered(server)) != -1)
-    server->s_unregistered_sockets[empty_unregistered] = create_sockstream(client_sock);
-  /* if the array capacity is not enough we reallocates it with a size 2 times more bigger*/
-  else if (s_unregistered_amount >= s_unregistered_capacity)
     {
-      s_unregistered_capacity *= 2;
-      s_unregistered_sockets = realloc(s_unregistered_sockets, s_unregistered_capacity);
-      s_unregistered_sockets[s_unregistered_amount] = client_sock;
-      s_unregistered_amount += 1;
+      server->s_unregistered_sockets[empty_unregistered] = create_sockstream(client_sock);
+    }
+  else
+    {
+      if (server->s_unregistered_amount >= server->s_unregistered_capacity)
+	{
+	  server->s_unregistered_capacity *= 2;
+	  if (server->s_unregistered_capacity == 0)
+	    server->s_unregistered_capacity = 1;
+	  server->s_unregistered_sockets = realloc(server->s_unregistered_sockets, server->s_unregistered_capacity);
+	}
+      server->s_unregistered_sockets[server->s_unregistered_amount] = client_sock;
+      server->s_unregistered_amount += 1;
     }
 }
 
@@ -165,18 +166,16 @@ void	manage_io_sockets(server_t* server, socketset_t* sets)
   int	i;
   int	j;
 
-  /* /\* unregistered *\/ */
-  /* i = 0; */
-  /* while (i < server->s_unregistered_amount) */
-  /*   { */
-  /*     if (FD_ISSET(server->s_unregistered_sockets[i].ss_socket, &sets->ss_read_set)) */
-  /* 	recv_sockstream(&server->s_unregistered_sockets[i]); */
-  /*     if (FD_ISSET(server->s_unregistered_sockets[i].ss_socket, &sets->ss_write_set)) */
-  /* 	send_sockstream(&server->s_unregistered_sockets[i]); */
-  /*     /\* if (FD_ISSET(server->s_unregistered_sockets[i].ss_socket, sets->ss_except_set)) *\/ */
-  /*     /\* 	; *\/ */
-  /*     i++; */
-  /*   } */
+  /* unregistered */
+  i = 0;
+  while (i < server->s_unregistered_amount)
+    {
+      if (FD_ISSET(server->s_unregistered_sockets[i].ss_socket, &sets->ss_read_set))
+  	recv_sockstream(&server->s_unregistered_sockets[i]);
+      if (FD_ISSET(server->s_unregistered_sockets[i].ss_socket, &sets->ss_write_set))
+  	send_sockstream(&server->s_unregistered_sockets[i]);
+      i++;
+    }
 
   /* /\* users in chans *\/ */
   /* i = 0; */
@@ -204,8 +203,28 @@ void	manage_io_sockets(server_t* server, socketset_t* sets)
     accept_client(server);
   if (FD_ISSET(server->s_socket,  &sets->ss_write_set))
     ;
-  if (FD_ISSET(server->s_socket,  &sets->ss_except_set))
-    ;
+}
+
+void	manage_request_unregistered(server_t* server, request_t* request, int socket_id)
+{
+
+}
+
+void	manage_server_datas(server_t* server)
+{
+  int		i;
+  request_t	request;
+
+  /* manage unregistered */
+  i = 0;
+  while (i < server->s_unregistered_amount)
+    {
+      while (parse_request(&server->s_unregistered_sockets[i], &request))
+	{
+	  manage_request_unregistered(server, &request, i);
+	}
+      i++;
+    }
 }
 
 int	main()
@@ -218,15 +237,11 @@ int	main()
   while (42)
     {
       refresh_socket_sets(&server, &sets);
-      printf("apres refresh sets\n");
       select_error = select(server.s_max + 1,
 			    &sets.ss_read_set,
-			    NULL,
-			    NULL,
-			    /* &sets.ss_write_set, */
-			    /* &sets.ss_except_set, */
-			    NULL);
-      printf("select\n");
+			    &sets.ss_write_set,
+			    NULL, NULL);
       manage_io_sockets(&server, &sets);
+      manage_server_datas(&server);
     }
 }

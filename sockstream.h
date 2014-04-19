@@ -5,14 +5,15 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Fri Apr 18 15:15:22 2014 guerot_a
-** Last update Fri Apr 18 15:37:41 2014 guerot_a
+** Last update Sat Apr 19 09:59:55 2014 guerot_a
 */
 
 #ifndef SOCKSTREAM_H
 # define SOCKSTREAM_H
 
 # define BUFFER_SIZE	4096
-# define IO_SIZE	512
+# define REQUEST_SIZE	512
+# define IO_SIZE	REQUEST_SIZE
 
 typedef struct	sockstream_s
 {
