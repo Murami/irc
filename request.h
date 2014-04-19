@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Sat Apr 19 09:55:33 2014 guerot_a
-** Last update Sat Apr 19 10:14:24 2014 guerot_a
+** Last update Sat Apr 19 10:30:36 2014 pinon
 */
 
 #ifndef REQUEST_H
@@ -21,6 +21,12 @@
 # define REQ_MSG_ALL		7
 # define REQ_SEND_FILE		8
 # define REQ_ACCEPT_FILE	9
+
+typedef struct  pair_request_s
+{
+  char *cmd;
+  int   req;
+}               pair_request_t;
 
 typedef struct	request_s
 {

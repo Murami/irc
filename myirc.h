@@ -5,23 +5,32 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:52:04 2014 pinon
-** Last update Fri Apr 18 15:22:26 2014 guerot_a
+** Last update Sat Apr 19 10:07:50 2014 pinon
 */
 
-#ifndef MYIRC_H_
-# define MYIRC_H_
+#ifndef		MYIRC_H
+# define	MYIRC_H
 
-# include	<stdio.h>
-# include	<string.h>
+# include		<stdio.h>
+# include		<string.h>
 
-# include	"channel.h"
+# include		"channel.h"
 
 # define		U_NAME_SIZE 128
 # define		C_NAME_SIZE 128
 
-int		str_match(char *str, char *name);
+/* COMMANDE */
 
 void		cmd_list(char *str, channel_t *channels, int nbr_channel);
 void		cmd_users(user_t *users, int nbr_user);
 
-#endif
+/* UTILS */
+
+int		find_empty_unregistered(server_t* server);
+int             str_match(char *str, char *name);
+
+/* INIT	*/
+
+sockstream_t*     creat_sockstream(int socket);
+
+#endif		/* MYIRC_H */

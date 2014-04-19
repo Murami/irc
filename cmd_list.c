@@ -5,27 +5,12 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:39:52 2014 pinon
-** Last update Fri Apr 18 15:24:38 2014 guerot_a
+** Last update Sat Apr 19 09:47:29 2014 pinon
 */
 
 #include <stdlib.h>
-#include <string.h>
 #include <stdio.h>
 #include "channel.h"
-
-int	str_match(char *str, char *name)
-{
-  int	i;
-
-  i = 0;
-  while (name[i] != 0)
-    {
-      if (str != NULL && !strncmp(str, name, strlen(str)))
-	return (1);
-      i++;
-    }
-  return (0);
-}
 
 void	cmd_list(char *str, channel_t *channels, int channel_amount)
 {
