@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:04:36 2014 guerot_a
-** Last update Sat Apr 19 10:28:28 2014 guerot_a
+** Last update Sat Apr 19 13:36:34 2014 guerot_a
 */
 
 #include <stdio.h>
@@ -23,6 +23,8 @@
 #include "socketset.h"
 #include "request.h"
 
+sockstream_t*	create_sockstream(int);
+
 void	init_server(server_t* server, short port)
 {
   struct protoent*	protocol;
@@ -33,7 +35,7 @@ void	init_server(server_t* server, short port)
   protocol = getprotobyname("TCP");
   server->s_socket = socket(AF_INET, SOCK_STREAM, protocol->p_proto);
   address.sin_family = AF_INET;
-  address.sin_port = htons(9999);
+  address.sin_port = htons(port);
   address.sin_addr.s_addr = INADDR_ANY;
   bind(server->s_socket,
        (struct sockaddr*)&address,
@@ -63,8 +65,8 @@ void	refresh_socket_sets(server_t* server, socketset_t* sets)
   i = 0;
   while (i < server->s_unregistered_amount)
     {
-      FD_SET(server->s_unregistered_sockets[i].ss_socket, &sets->ss_read_set);
-      FD_SET(server->s_unregistered_sockets[i].ss_socket, &sets->ss_write_set);
+      FD_SET(server->s_unregistered_sockets[i]->ss_socket, &sets->ss_read_set);
+      FD_SET(server->s_unregistered_sockets[i]->ss_socket, &sets->ss_write_set);
       i++;
     }
 
@@ -75,11 +77,11 @@ void	refresh_socket_sets(server_t* server, socketset_t* sets)
   /*     j = 0; */
   /*     while (j < server->s_channels[i].c_user_amount) */
   /* 	{ */
-  /* 	  FD_SET(server->s_channels[i].c_users[j].u_socket.ss_socket, */
+  /* 	  FD_SET(server->s_channels[i].c_users[j].u_socket->ss_socket, */
   /* 		 &sets->ss_read_set); */
-  /* 	  FD_SET(server->s_channels[i].c_users[j].u_socket.ss_socket, */
+  /* 	  FD_SET(server->s_channels[i].c_users[j].u_socket->ss_socket, */
   /* 		 &sets->ss_write_set); */
-  /* 	  FD_SET(server->s_channels[i].c_users[j].u_socket.ss_socket, */
+  /* 	  FD_SET(server->s_channels[i].c_users[j].u_socket->ss_socket, */
   /* 		 &sets->ss_except_set); */
   /* 	  j++; */
   /* 	} */
@@ -97,19 +99,29 @@ void	recv_sockstream(sockstream_t* sstream)
   int	readsize;
   int	nread;
 
-  if (sstream->ss_read_size == 0)
-    return;
+  /* printf("rcv\n"); */
   readsize = IO_SIZE;
-  if (readsize > sstream->ss_read_size)
-    readsize = sstream->ss_read_size;
-  nread = read(sstream->ss_socket,
-	       sstream->ss_buffer_read + sstream->ss_read_start,
-	       readsize - (sstream->ss_read_start + readsize) % BUFFER_SIZE);
-  if (nread == (sstream->ss_read_start + readsize) % BUFFER_SIZE)
+  if (readsize > BUFFER_SIZE - sstream->ss_read_size)
+    readsize = BUFFER_SIZE - sstream->ss_read_size;
+  if (readsize == 0)
+    return;
+  if (readsize + sstream->ss_read_start > BUFFER_SIZE)
     {
-      nread += read(sstream->ss_socket,
-		    sstream->ss_buffer_read + sstream->ss_read_start,
-		    readsize - nread);
+      nread = read(sstream->ss_socket,
+		   sstream->ss_buffer_read + sstream->ss_read_start,
+		   BUFFER_SIZE - sstream->ss_read_start);
+      if (nread == BUFFER_SIZE - sstream->ss_read_start)
+	{
+	  nread += read(sstream->ss_socket,
+			sstream->ss_buffer_read + sstream->ss_read_start,
+			readsize - BUFFER_SIZE + sstream->ss_read_start);
+	}
+    }
+  else
+    {
+      nread = read(sstream->ss_socket,
+		   sstream->ss_buffer_read + sstream->ss_read_start,
+		   readsize);
     }
   sstream->ss_read_size += nread;
 }
@@ -154,9 +166,9 @@ void	accept_client(server_t* server)
 	  server->s_unregistered_capacity *= 2;
 	  if (server->s_unregistered_capacity == 0)
 	    server->s_unregistered_capacity = 1;
-	  server->s_unregistered_sockets = realloc(server->s_unregistered_sockets, server->s_unregistered_capacity);
+	  server->s_unregistered_sockets = realloc(server->s_unregistered_sockets, server->s_unregistered_capacity * sizeof(void*));
 	}
-      server->s_unregistered_sockets[server->s_unregistered_amount] = client_sock;
+      server->s_unregistered_sockets[server->s_unregistered_amount] = create_sockstream(client_sock);
       server->s_unregistered_amount += 1;
     }
 }
@@ -170,10 +182,10 @@ void	manage_io_sockets(server_t* server, socketset_t* sets)
   i = 0;
   while (i < server->s_unregistered_amount)
     {
-      if (FD_ISSET(server->s_unregistered_sockets[i].ss_socket, &sets->ss_read_set))
-  	recv_sockstream(&server->s_unregistered_sockets[i]);
-      if (FD_ISSET(server->s_unregistered_sockets[i].ss_socket, &sets->ss_write_set))
-  	send_sockstream(&server->s_unregistered_sockets[i]);
+      if (FD_ISSET(server->s_unregistered_sockets[i]->ss_socket, &sets->ss_read_set))
+	recv_sockstream(server->s_unregistered_sockets[i]);
+      if (FD_ISSET(server->s_unregistered_sockets[i]->ss_socket, &sets->ss_write_set))
+  	send_sockstream(server->s_unregistered_sockets[i]);
       i++;
     }
 
@@ -184,13 +196,13 @@ void	manage_io_sockets(server_t* server, socketset_t* sets)
   /*     j = 0; */
   /*     while (j < server->s_channels[i].c_user_amount) */
   /* 	{ */
-  /* 	  if (FD_ISSET(server->s_channels[i].c_users[j].u_socket.ss_socket, */
+  /* 	  if (FD_ISSET(server->s_channels[i].c_users[j].u_socket->ss_socket, */
   /* 		       &sets->ss_read_set)) */
   /* 	    recv_sockstream(&server->s_channels[i].c_users[j].u_socket); */
-  /* 	  if (FD_ISSET(server->s_channels[i].c_users[j].u_socket.ss_socket, */
+  /* 	  if (FD_ISSET(server->s_channels[i].c_users[j].u_socket->ss_socket, */
   /* 		       &sets->ss_write_set)) */
   /* 	    send_sockstream(&server->s_channels[i].c_users[j].u_socket); */
-  /* 	  /\* if (FD_ISSET(server->s_channels[i]->c_users[j]->u_socket.ss_socket, *\/ */
+  /* 	  /\* if (FD_ISSET(server->s_channels[i]->c_users[j]->u_socket->ss_socket, *\/ */
   /* 	  /\* 	       sets->ss_except_set)) *\/ */
   /* 	  /\*   ; *\/ */
   /* 	  j++; */
@@ -219,27 +231,28 @@ void	manage_server_datas(server_t* server)
   i = 0;
   while (i < server->s_unregistered_amount)
     {
-      while (parse_request(&server->s_unregistered_sockets[i], &request))
-	{
-	  manage_request_unregistered(server, &request, i);
-	}
+      while (parse_request(server->s_unregistered_sockets[i], &request))
+      	{
+      	  manage_request_unregistered(server, &request, i);
+      	}
       i++;
     }
 }
 
-int	main()
+int	main(int argc, char **argv)
 {
   int		select_error;
   server_t	server;
   socketset_t	sets;
 
-  init_server(&server, 4242);
+  init_server(&server, atoi(argv[1]));
   while (42)
     {
       refresh_socket_sets(&server, &sets);
       select_error = select(server.s_socket_max + 1,
 			    &sets.ss_read_set,
-			    &sets.ss_write_set,
+			    /* &sets.ss_write_set, */
+			    NULL,
 			    NULL, NULL);
       manage_io_sockets(&server, &sets);
       manage_server_datas(&server);

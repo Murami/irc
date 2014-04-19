@@ -1,11 +1,11 @@
 /*
 ** utils.c for  in /home/pinon_a/rendu/PSU_2013_myirc
-** 
+**
 ** Made by pinon
 ** Login   <pinon_a@epitech.net>
-** 
+**
 ** Started on  Sat Apr 19 09:42:33 2014 pinon
-** Last update Sat Apr 19 09:48:57 2014 pinon
+** Last update Sat Apr 19 11:38:26 2014 guerot_a
 */
 
 #include <stdlib.h>
@@ -31,9 +31,9 @@ int     find_empty_unregistered(server_t* server)
   int   i;
 
   i = 0;
-  while (i < s_unregistered_capacity)
+  while (i < server->s_unregistered_capacity)
     {
-      if (s_unregistered_sockets[i] == NULL)
+      if (server->s_unregistered_sockets[i] == NULL)
         return (i);
       i++;
     }

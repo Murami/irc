@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Fri Apr 18 15:15:22 2014 guerot_a
-** Last update Sat Apr 19 09:59:55 2014 guerot_a
+** Last update Sat Apr 19 11:33:08 2014 guerot_a
 */
 
 #ifndef SOCKSTREAM_H
