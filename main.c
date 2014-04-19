@@ -5,11 +5,12 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:04:36 2014 guerot_a
-** Last update Sat Apr 19 13:36:34 2014 guerot_a
+** Last update Sat Apr 19 15:23:35 2014 guerot_a
 */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
@@ -25,11 +26,130 @@
 
 sockstream_t*	create_sockstream(int);
 
+int		find_empty_channel(server_t* server)
+{
+  int		i;
+
+  i = 0;
+  while (i < server->s_channel_amount)
+    {
+      if (server->s_channels[i] == NULL)
+	return (i);
+      i++;
+    }
+  return (i);
+}
+
+int		find_empty_user(channel_t* channel)
+{
+  int		i;
+
+  i = 0;
+  while (i < channel->c_user_amount)
+    {
+      if (channel->c_users[i] == NULL)
+	return (i);
+      i++;
+    }
+  return (-1);
+}
+
+int		available_name(channel_t* channel, char* name)
+{
+  int	i;
+
+  i = 0;
+  while (i < channel->c_user_amount)
+    {
+      if (channel->c_users[i] != NULL)
+	{
+	  if (strncmp(channel->c_users[i]->u_name, name, U_NAME_SIZE) == 0)
+	    return (0);
+	}
+      i++;
+    }
+  return (1);
+}
+
+void		name_user(channel_t* channel, char* name)
+{
+  channel->c_last_nameid++;
+  strcpy(name, "anon");
+  sprintf(name, "%d", channel->c_last_nameid);
+}
+
+user_t* 	create_user(sockstream_t* sstream, channel_t* channel)
+{
+  user_t*	user;
+
+  user = malloc(sizeof(user_t));
+  name_user(channel, user->u_name);
+  user->u_sstream = sstream;
+
+  return (user);
+}
+
+void		add_user(sockstream_t* sstream, channel_t* channel)
+{
+  int	empty_user;
+
+  if (empty_user = find_empty_user(channel) != -1)
+    {
+      channel->c_users[empty_user] = create_user(sstream, channel);
+    }
+  else
+    {
+      if (channel->c_user_amount == channel->c_user_capacity)
+	{
+	  channel->c_user_capacity *= 2;
+	  if (channel->c_user_capacity == 0)
+	    channel->c_user_capacity = 1;
+	  channel->c_users = realloc(channel->c_users, channel->c_user_capacity * sizeof(void*));
+	}
+      channel->c_users[channel->c_user_amount] = create_user(sstream, channel);
+      channel->c_user_amount += 1;
+    }
+}
+
+channel_t*	create_channel(char* channel_name)
+{
+  channel_t*	chan;
+
+  chan = malloc(sizeof(channel_t));
+  strncpy(chan->c_name, channel_name, C_NAME_SIZE);
+  chan->c_user_amount = 0;
+  chan->c_user_capacity = 0;
+  chan->c_users = NULL;
+  chan->c_last_nameid = 0;
+  return (chan);
+}
+
+void	add_channel(server_t* server, char* channel_name)
+{
+  int	empty_channel;
+
+  if (empty_channel = find_empty_channel(server) != -1)
+    {
+      server->s_channels[empty_channel] = create_channel(channel_name);
+    }
+  else
+    {
+      if (server->s_channel_amount == server->s_channel_capacity)
+	{
+	  server->s_channel_capacity *= 2;
+	  if (server->s_channel_capacity == 0)
+	    server->s_channel_capacity = 1;
+	  server->s_channels = realloc(server->s_channels, server->s_channel_capacity * sizeof(void*));
+	}
+      server->s_channels[server->s_channel_amount] = create_channel(channel_name);
+      server->s_channel_amount += 1;
+    }
+}
+
 void	init_server(server_t* server, short port)
 {
   struct protoent*	protocol;
   struct sockaddr_in	address;
-  u_long		argp=1;
 
   /* Create and init the socket */
   protocol = getprotobyname("TCP");
@@ -49,6 +169,11 @@ void	init_server(server_t* server, short port)
   server->s_unregistered_amount = 0;
   server->s_unregistered_capacity = 0;
   server->s_unregistered_sockets = NULL;
+
+  /* Create 3 basics channels */
+  add_channel(server, "chan1");
+  add_channel(server, "chan2");
+  add_channel(server, "chan3");
 }
 
 void	refresh_socket_sets(server_t* server, socketset_t* sets)
@@ -65,8 +190,11 @@ void	refresh_socket_sets(server_t* server, socketset_t* sets)
   i = 0;
   while (i < server->s_unregistered_amount)
     {
-      FD_SET(server->s_unregistered_sockets[i]->ss_socket, &sets->ss_read_set);
-      FD_SET(server->s_unregistered_sockets[i]->ss_socket, &sets->ss_write_set);
+      if (server->s_unregistered_sockets[i] != NULL)
+	{
+	  FD_SET(server->s_unregistered_sockets[i]->ss_socket, &sets->ss_read_set);
+	  FD_SET(server->s_unregistered_sockets[i]->ss_socket, &sets->ss_write_set);
+	}
       i++;
     }
 
@@ -182,10 +310,13 @@ void	manage_io_sockets(server_t* server, socketset_t* sets)
   i = 0;
   while (i < server->s_unregistered_amount)
     {
-      if (FD_ISSET(server->s_unregistered_sockets[i]->ss_socket, &sets->ss_read_set))
-	recv_sockstream(server->s_unregistered_sockets[i]);
-      if (FD_ISSET(server->s_unregistered_sockets[i]->ss_socket, &sets->ss_write_set))
-  	send_sockstream(server->s_unregistered_sockets[i]);
+      if (server->s_unregistered_sockets[i] != NULL)
+	{
+	  if (FD_ISSET(server->s_unregistered_sockets[i]->ss_socket, &sets->ss_read_set))
+	    recv_sockstream(server->s_unregistered_sockets[i]);
+	  if (FD_ISSET(server->s_unregistered_sockets[i]->ss_socket, &sets->ss_write_set))
+	    send_sockstream(server->s_unregistered_sockets[i]);
+	}
       i++;
     }
 

@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Fri Apr 18 15:25:42 2014 guerot_a
-** Last update Sat Apr 19 13:30:14 2014 guerot_a
+** Last update Sat Apr 19 14:20:29 2014 guerot_a
 */
 
 #ifndef SERVER_H
@@ -21,7 +21,8 @@ typedef struct		server_s
 {
   int			s_socket;
   int			s_channel_amount;
-  channel_t*		s_channels;
+  int			s_channel_capacity;
+  channel_t**		s_channels;
   int			s_unregistered_amount;
   int			s_unregistered_capacity;
   sockstream_t**	s_unregistered_sockets;
