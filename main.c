@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:04:36 2014 guerot_a
-** Last update Sat Apr 19 10:21:56 2014 guerot_a
+** Last update Sat Apr 19 10:28:28 2014 guerot_a
 */
 
 #include <stdio.h>
@@ -237,7 +237,7 @@ int	main()
   while (42)
     {
       refresh_socket_sets(&server, &sets);
-      select_error = select(server.s_max + 1,
+      select_error = select(server.s_socket_max + 1,
 			    &sets.ss_read_set,
 			    &sets.ss_write_set,
 			    NULL, NULL);
