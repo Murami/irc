@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:04:36 2014 guerot_a
-** Last update Sat Apr 19 16:01:42 2014 guerot_a
+** Last update Sat Apr 19 16:27:40 2014 guerot_a
 */
 
 #include <stdio.h>
@@ -350,47 +350,62 @@ void	manage_io_sockets(server_t* server, socketset_t* sets)
     ;
 }
 
-void manage_nickname_unregistered(server, request, socket_id)
+void parse_args(char **tab, char *str)
+{
+  str[index(str, '\n') - str + 1] = '\0';
+  strtok(str, " ");
+  tab[0] = strtok(NULL, " ");
+  tab[1] = strtok(NULL, " ");
+}
+
+void manage_nickname_unregistered(server_t* server, request_t* request, int socket_id)
 {
   printf("nick (ta mere)\n");
 }
 
-void manage_list_unregistered(server, request, socket_id)
+void manage_list_unregistered(server_t* server, request_t* request, int socket_id)
 {
   printf("list\n");
 }
 
-void manage_join_unregistered(server, request, socket_id)
+void manage_join_unregistered(server_t* server, request_t* request, int socket_id)
 {
-  printf("join de shit\n");
+  char *arg[2];
+
+  memset(arg, 0, 2 * sizeof(void*));
+  printf("cmd join\n");
+  printf("%s\n", request->r_buffer);
+  parse_args(arg, request->r_buffer);
+  printf("arg1 = %s\n", arg[0]);
+  printf("arg2 = %s\n", arg[1]);
 }
 
-void manage_part_unregistered(server, request, socket_id)
+void manage_part_unregistered(server_t* server, request_t* request, int socket_id)
 {
   printf("part ouze\n");
 }
 
-void manage_users_unregistered(server, request, socket_id)
+void manage_users_unregistered(server_t* server, request_t* request, int socket_id)
 {
   printf("users\n");
 }
 
-void manage_msg_unregistered(server, request, socket_id)
+void manage_msg_unregistered(server_t* server, request_t* request, int socket_id)
 {
   printf("msg\n");
 }
 
-void manage_msg_all_unregistered(server, request, socket_id)
+void manage_msg_all_unregistered(server_t* server, request_t* request, int socket_id)
 {
   printf("msg all\n");
 }
 
-void manage_send_file_unregistered(server, request, socket_id)
+void manage_send_file_unregistered(server_t* server, request_t* request, int socket_id)
 {
   printf("send file\n");
 }
 
-void manage_accept_file_unregistered(server, request, socket_id)
+void manage_accept_file_unregistered(server_t* server, request_t* request, int socket_id)
 {
   printf("accept file\n");
 }

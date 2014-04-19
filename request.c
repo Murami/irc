@@ -5,7 +5,7 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Sat Apr 19 10:05:36 2014 pinon
-** Last update Sat Apr 19 15:59:39 2014 guerot_a
+** Last update Sat Apr 19 16:51:43 2014 guerot_a
 */
 
 #include <string.h>
@@ -34,6 +34,8 @@ int	parse_request(sockstream_t* stream, request_t* request)
 
   if (stream->ss_read_size == 0)
     return (0);
+  printf("1 - size = %d\n", stream->ss_read_size);
+  printf("1 - start = %d\n", stream->ss_read_start);
   request->r_type = REQ_NONE;
   i = BUFFER_SIZE - stream->ss_read_start;
   if (stream->ss_read_size < i)
@@ -60,8 +62,19 @@ int	parse_request(sockstream_t* stream, request_t* request)
       }
   else
     request->r_type = REQ_MSG_ALL;
-  stream->ss_read_start += MIN(strchr(request->r_buffer, '\n') - request->r_buffer + 1, stream->ss_read_size);
-  stream->ss_read_size -= MIN(strchr(request->r_buffer, '\n') - request->r_buffer + 1, stream->ss_read_size);
-  stream->ss_read_start %= REQUEST_SIZE;
+  if (!strchr(request->r_buffer, '\n'))
+    {
+      stream->ss_read_size = 0;
+      stream->ss_read_start = 0;
+    }
+  else
+    {
+      stream->ss_read_start += MIN(strchr(request->r_buffer, '\n') - request->r_buffer + 1, stream->ss_read_size);
+      stream->ss_read_size -= MIN(strchr(request->r_buffer, '\n') - request->r_buffer + 1, stream->ss_read_size);
+      stream->ss_read_start %= REQUEST_SIZE;
+    }
+
+  printf("2 - size = %d\n", stream->ss_read_size);
+  printf("2 - start = %d\n", stream->ss_read_start);
   return (1);
 }
