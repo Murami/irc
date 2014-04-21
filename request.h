@@ -5,11 +5,15 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Sat Apr 19 09:55:33 2014 guerot_a
-** Last update Sat Apr 19 11:29:26 2014 guerot_a
+** Last update Mon Apr 21 23:38:46 2014 guerot_a
 */
 
 #ifndef REQUEST_H
 # define REQUEST_H
+
+# include "user.h"
+# include "server.h"
+# include "constants.h"
 
 # define REQ_NONE		0
 # define REQ_NICK		1
@@ -30,8 +34,10 @@ typedef struct  pair_request_s
 
 typedef struct	request_s
 {
-  int		r_type;
-  char		r_buffer[REQUEST_SIZE];
+  int		type;
+  char		buffer[REQUEST_SIZE];
+  user_t*	user;
+  server_t*	server;
 }		request_t;
 
 #endif /* REQUEST_H */

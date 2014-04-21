@@ -5,8 +5,10 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Mon Apr 21 19:33:03 2014 guerot_a
-** Last update Mon Apr 21 19:45:23 2014 guerot_a
+** Last update Mon Apr 21 23:08:48 2014 guerot_a
 */
+
+#include "myirc.h"
 
 void	refresh_socket_sets(server_t* server,
 			    socketset_t* sets)
@@ -26,8 +28,8 @@ void	refresh_socket_sets(server_t* server,
       INC(curr);
       sets->size++;
     }
-  FD_SET(server->socket, &sets->read_set);
-  FD_SET(server->socket, &sets->write_set);
+  FD_SET(server->sock, &sets->read_set);
+  FD_SET(server->sock, &sets->write_set);
   sets->size++;
 }
 
@@ -40,10 +42,11 @@ void	manage_io_sockets_unregistered(server_t* server,
   curr = LISTBEGIN(server->users);
   while (curr != LISTEND(server->users))
     {
+      user = curr->data;
       if (FD_ISSET(user->sockstream->socket, &sets->read_set))
-	recv_sockstream(server->s_unregistered_sockets[i]);
+	recv_sockstream(user->sockstream);
       if (FD_ISSET(user->sockstream->socket, &sets->write_set))
-	send_sockstream(server->s_unregistered_sockets[i]);
+	send_sockstream(user->sockstream);
       INC(curr);
     }
 }
@@ -51,7 +54,7 @@ void	manage_io_sockets_unregistered(server_t* server,
 void	manage_io_sockets_listen(server_t* server,
 				 socketset_t* sets)
 {
-  if (FD_ISSET(server->s_socket,  &sets->read_set))
+  if (FD_ISSET(server->sock, &sets->read_set))
     accept_client(server);
 }
 

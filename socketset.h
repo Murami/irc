@@ -5,13 +5,13 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Fri Apr 18 15:32:33 2014 guerot_a
-** Last update Mon Apr 21 19:28:13 2014 guerot_a
+** Last update Mon Apr 21 22:28:19 2014 guerot_a
 */
 
 #ifndef SOCKETSET_H
 # define SOCKETSET_H
 
-# include <sys/select.h>
+# include "dependencies.h"
 
 typedef struct	socketset_s
 {

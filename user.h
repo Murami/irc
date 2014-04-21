@@ -5,15 +5,14 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:37:02 2014 pinon
-** Last update Mon Apr 21 19:47:13 2014 guerot_a
+** Last update Mon Apr 21 23:06:04 2014 guerot_a
 */
 
 #ifndef USER_H_
 # define USER_H_
 
+# include "channel.h"
 # include "sockstream.h"
-
-# define	U_NAME_SIZE 128
 
 typedef struct  user_s
 {

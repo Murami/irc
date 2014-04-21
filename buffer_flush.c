@@ -5,8 +5,10 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Mon Apr 21 19:29:20 2014 guerot_a
-** Last update Mon Apr 21 19:29:53 2014 guerot_a
+** Last update Mon Apr 21 22:39:39 2014 guerot_a
 */
+
+#include "myirc.h"
 
 void	recv_sockstream(sockstream_t* sstream)
 {

@@ -5,15 +5,13 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Fri Apr 18 15:15:22 2014 guerot_a
-** Last update Mon Apr 21 18:26:51 2014 guerot_a
+** Last update Mon Apr 21 22:42:28 2014 guerot_a
 */
 
 #ifndef SOCKSTREAM_H
 # define SOCKSTREAM_H
 
-# define BUFFER_SIZE	4096
-# define REQUEST_SIZE	512
-# define IO_SIZE	REQUEST_SIZE
+# include "constants.h"
 
 typedef struct	sockstream_s
 {
@@ -22,7 +20,7 @@ typedef struct	sockstream_s
   char		rbuff[BUFFER_SIZE];
   int		wstart;
   int		wsize;
-  char		wbuffer[BUFFER_SIZE];
+  char		wbuff[BUFFER_SIZE];
   int		socket;
 }		sockstream_t;
 

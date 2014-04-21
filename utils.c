@@ -5,12 +5,10 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Sat Apr 19 09:42:33 2014 pinon
-** Last update Sat Apr 19 11:38:26 2014 guerot_a
+** Last update Mon Apr 21 23:50:16 2014 guerot_a
 */
 
-#include <stdlib.h>
-#include <string.h>
-#include "server.h"
+#include "myirc.h"
 
 int     str_match(char *str, char *name)
 {
@@ -24,18 +22,4 @@ int     str_match(char *str, char *name)
       i++;
     }
   return (0);
-}
-
-int     find_empty_unregistered(server_t* server)
-{
-  int   i;
-
-  i = 0;
-  while (i < server->s_unregistered_capacity)
-    {
-      if (server->s_unregistered_sockets[i] == NULL)
-        return (i);
-      i++;
-    }
-  return (-1);
 }

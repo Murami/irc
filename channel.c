@@ -5,27 +5,31 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Mon Apr 21 19:31:15 2014 guerot_a
-** Last update Mon Apr 21 19:31:41 2014 guerot_a
+** Last update Mon Apr 21 23:00:13 2014 guerot_a
 */
+
+#include "myirc.h"
 
 channel_t*	new_channel(char* channel_name)
 {
   channel_t*	chan;
 
   chan = malloc(sizeof(channel_t));
-  strncpy(chan->c_name, channel_name, C_NAME_SIZE);
-  init_list(chan->users);
+  strncpy(chan->name, channel_name, C_NAME_SIZE);
+  chan->users = new_list();
   chan->last_nameid = 0;
   return (chan);
 }
 
-void	user_join_channel(channel_t* channel, t_list_elm* e_user)
+void	user_join_channel(server_t* server,
+			  channel_t* channel,
+			  list_elm_t* e_user)
 {
   user_t*	user;
 
-  user = s_user->data;
+  user = e_user->data;
   list_erase(server->users, e_user);
-  list_push_back(channel->user, user);
+  list_push_back(channel->users, user);
   name_user(channel, user->name);
 }
 
