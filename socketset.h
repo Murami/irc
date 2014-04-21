@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Fri Apr 18 15:32:33 2014 guerot_a
-** Last update Fri Apr 18 15:34:11 2014 guerot_a
+** Last update Mon Apr 21 19:28:13 2014 guerot_a
 */
 
 #ifndef SOCKETSET_H
@@ -15,10 +15,10 @@
 
 typedef struct	socketset_s
 {
-  fd_set	ss_read_set;
-  fd_set	ss_write_set;
-  fd_set	ss_except_set;
-  int		ss_size;
+  fd_set	read_set;
+  fd_set	write_set;
+  fd_set	except_set;
+  int		size;
 }		socketset_t;
 
 #endif /* SOCKETSET_H */

@@ -5,7 +5,7 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:37:02 2014 pinon
-** Last update Sat Apr 19 14:47:04 2014 guerot_a
+** Last update Mon Apr 21 19:47:13 2014 guerot_a
 */
 
 #ifndef USER_H_
@@ -17,8 +17,9 @@
 
 typedef struct  user_s
 {
-  sockstream_t*	u_sstream;
-  char          u_name[U_NAME_SIZE];
+  sockstream_t*	sockstream;
+  char          name[U_NAME_SIZE];
+  channel_t*	channel;
 }               user_t;
 
 #endif

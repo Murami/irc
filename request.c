@@ -5,7 +5,7 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Sat Apr 19 10:05:36 2014 pinon
-** Last update Sat Apr 19 16:51:43 2014 guerot_a
+** Last update Mon Apr 21 19:34:20 2014 guerot_a
 */
 
 #include <string.h>
@@ -26,6 +26,14 @@ pair_request_t	pairs[] =
     {"/accept_file", REQ_ACCEPT_FILE},
     {NULL, 0}
   };
+
+void parse_args(char **tab, char *str)
+{
+  str[index(str, '\n') - str + 1] = '\0';
+  strtok(str, " ");
+  tab[0] = strtok(NULL, " ");
+  tab[1] = strtok(NULL, " ");
+}
 
 int	parse_request(sockstream_t* stream, request_t* request)
 {

@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Fri Apr 18 15:15:22 2014 guerot_a
-** Last update Sat Apr 19 11:33:08 2014 guerot_a
+** Last update Mon Apr 21 18:26:51 2014 guerot_a
 */
 
 #ifndef SOCKSTREAM_H
@@ -17,13 +17,13 @@
 
 typedef struct	sockstream_s
 {
-  int		ss_read_start;
-  int		ss_read_size;
-  char		ss_buffer_read[BUFFER_SIZE];
-  int		ss_write_start;
-  int		ss_write_size;
-  char		ss_buffer_write[BUFFER_SIZE];
-  int		ss_socket;
+  int		rstart;
+  int		rsize;
+  char		rbuff[BUFFER_SIZE];
+  int		wstart;
+  int		wsize;
+  char		wbuffer[BUFFER_SIZE];
+  int		socket;
 }		sockstream_t;
 
 #endif /* SOCKSTREAM_H */
