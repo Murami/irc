@@ -5,7 +5,7 @@
 ## Login   <guerot_a@epitech.net>
 ## 
 ## Started on  Sun Mar  2 18:06:05 2014 anthony guerot
-## Last update Tue Apr 22 11:15:18 2014 guerot_a
+## Last update Tue Apr 22 11:29:06 2014 guerot_a
 ##
 
 ## FILES
@@ -16,7 +16,6 @@ SRC		=	main			\
 			actions			\
 			buffer_flush		\
 			channel			\
-			init			\
 			list			\
 			manage_io		\
 			request			\

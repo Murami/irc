@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Mon Apr 21 19:32:20 2014 guerot_a
-** Last update Mon Apr 21 23:54:37 2014 guerot_a
+** Last update Tue Apr 22 11:34:11 2014 guerot_a
 */
 
 #include "myirc.h"
@@ -43,7 +43,6 @@ void	init_server(server_t* server, short port)
 
 void	accept_client(server_t* server)
 {
-  int		empty_u;
   int		client_sock;
 
   client_sock = accept(server->sock, NULL, NULL);

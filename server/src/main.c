@@ -5,12 +5,10 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:04:36 2014 guerot_a
-** Last update Tue Apr 22 11:27:12 2014 guerot_a
+** Last update Tue Apr 22 11:28:21 2014 guerot_a
 */
 
 #include "myirc.h"
-
-sockstream_t*	create_sockstream(int);
 
 int		available_name(channel_t* channel, char* name)
 {

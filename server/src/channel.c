@@ -5,12 +5,12 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Mon Apr 21 19:31:15 2014 guerot_a
-** Last update Tue Apr 22 00:05:58 2014 guerot_a
+** Last update Tue Apr 22 11:33:45 2014 guerot_a
 */
 
 #include "myirc.h"
 
-channel_t*	new_channel(char* channel_name)
+channel_t*	new_channel(const char* channel_name)
 {
   channel_t*	chan;
 
@@ -33,7 +33,7 @@ void	user_join_channel(server_t* server,
   name_user(channel, user->name);
 }
 
-void	add_channel(server_t* server, char* channel_name)
+void	add_channel(server_t* server, const char* channel_name)
 {
   channel_t*	channel;
 
