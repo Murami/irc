@@ -5,7 +5,7 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:37:02 2014 pinon
-** Last update Mon Apr 21 23:06:04 2014 guerot_a
+** Last update Tue Apr 22 14:54:23 2014 guerot_a
 */
 
 #ifndef USER_H_

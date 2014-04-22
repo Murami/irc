@@ -5,47 +5,151 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Mon Apr 21 19:30:39 2014 guerot_a
-** Last update Tue Apr 22 11:15:55 2014 guerot_a
+** Last update Tue Apr 22 16:04:27 2014 guerot_a
 */
 
 #include "myirc.h"
 
+void	send_servermsg(int socket, int msgid,
+		       char* data, int datalen)
+{
+  char	buff[IO_SIZE + 1];
+
+  memset(buff, 0, IO_SIZE);
+  snprintf(buff, 3, "%03d", msgid);
+  if (data != NULL)
+    {
+      strncat(buff, data,
+	      MIN(IO_SIZE - RPL_LIST - 1, datalen));
+    }
+  strncat(buff, "\n", IO_SIZE - RPL_LIST);
+  write(socket, buff, strnlen(buff, IO_SIZE));
+}
+
 /* IRC COMMANDS */
 
-void	manage_nickname(request_t* request)
+void	manage_nickname(request_t* req)
 {
-  (void) request;
-  printf("nick (ta mere)\n");
+  if (req->arg1 == NULL)
+    {
+      send_servermsg(req->user->sockstream->socket,
+		     ERR_NONICKNAMEGIVEN, NULL, 0);
+      return;
+    }
+  if (!(available_name(req->arg1)))
+    {
+      send_servermsg(req->user->sockstream->socket,
+		     ERR_NICKNAMEINUSE, NULL, 0);
+      return;
+    }
+  strncpy(req->user->name, req->arg1, U_NAME_SIZE);
 }
 
-void	manage_list(request_t* request)
+void	manage_list(request_t* req)
 {
-  (void) request;
-  printf("list\n");
+  list_elm_t*	curr;
+  channel_t*	chan;
+
+  /* LISTSTART */
+  send_servermsg(req->user->sockstream->socket,
+		 RPL_LISTSTART, NULL, 0);
+
+  /* LIST */
+  curr = LISTBEGIN(req->server->chans);
+  while (curr != LISTEND(req->server->chans))
+    {
+      chan = (channel_t*)curr->data;
+      send_servermsg(req->user->sockstream->socket,
+		     RPL_LIST, chan->name, C_NAME_SIZE);
+      INC(curr);
+    }
+
+  /* LISTEND */
+  send_servermsg(req->user->sockstream->socket,
+		 RPL_LISTEND, NULL, 0);
 }
 
-void	manage_join(request_t* request)
+void	manage_join(request_t* req)
 {
-  (void) request;
-  printf("join\n");
+  channel_t	chan;
+
+  if (req->arg1 == NULL)
+    {
+      send_servermsg(req->user->sockstream->socket,
+		     ERR_NEEDMOREPARAM, NULL, 0);
+      return;
+    }
+  if (!(chan = find_channel(req->server, req->arg1)))
+    {
+      send_servermsg(req->user->sockstream->socket,
+		     ERR_NOSUCHCHANNEL, NULL, 0);
+      return;
+    }
+  req->user->channel = chan;
+  send_servermsg(req->user->sockstream->socket,
+		 RPL_JOINOK, NULL, 0);
+  /* IL FAUT PREVENIR TOUS LES USERS SUR LE CHAN AVC RPL_NEWJOIN */
 }
 
-void	manage_part(request_t* request)
+void	manage_part(request_t* req)
 {
-  (void) request;
-  printf("part\n");
+  if (req->user->chan == NULL)
+    {
+      send_servermsg(req->user->sockstream->socket,
+		     RPL_NOTONCHANNEL, NULL, 0);
+    }
+  req->user->chan = NULL;
+  send_servermsg(req->user->sockstream->socket,
+		 RPL_PARTOK, NULL, 0);
+  /* IL FAUT PREVENIR TOUS LES USERS DU CHAN AVEC RPL_NEWPART */
 }
 
 void	manage_users(request_t* request)
 {
-  (void) request;
-  printf("users\n");
+  list_elm_t*	curr;
+  user_t*	user;
+
+  /* USERSSTART */
+  send_servermsg(req->user->sockstream->socket,
+		 RPL_USERSSTART, NULL, 0);
+
+  /* USERS */
+  curr = LISTBEGIN(server->users);
+  while (curr != LISTEND(server->users))
+    {
+      if (user->chan != NULL)
+	{
+	  user = (channel_t*)curr->data;
+	  send_servermsg(req->user->sockstream->socket,
+			 RPL_USERS, user->name, U_NAME_SIZE);
+	}
+      INC(curr);
+    }
+
+  /* USERSEND */
+  send_servermsg(req->user->sockstream->socket,
+		 RPL_USERSEND, NULL, 0);
 }
 
-void	manage_msg(request_t* request)
+void	manage_msg(request_t* req)
 {
-  (void) request;
-  printf("msg\n");
+  user_t*	user;
+
+  if (arg1 == NULL || arg2 == NULL)
+    {
+      send_servermsg(req->user->sockstream,
+		     ERR_NEEDMOREPARAM, NULL, 0);
+      return;
+    }
+  if (!(user = find_user(req->arg1)))
+    {
+      send_servermsg(req->user->socketstream,
+		     ERR_NOSUCHUSER, NULL, 0);
+      return;
+    }
+  send_servermsg(user, RPL_MSGSENDER,
+		 req->user->name, IO_SIZE);
+  send_servermsg(user, RPL_MSG, req->arg2, IO_SIZE);
 }
 
 void	manage_msg_all(request_t* request)
@@ -72,9 +176,12 @@ void	manage_invalidcmd(request_t* request)
   printf("invalid cmd\n");
 }
 
+/* */
+
 void	manage_request_user(request_t* request, int inchannel)
 {
-  /* NO ACTION */
-  (void) request;
-  (void) inchannel;
+  if (inchannel == request->channelaction)
+    request->func(request);
+  else
+    manage_invalidcmd(request);
 }

@@ -5,7 +5,7 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:52:04 2014 pinon
-** Last update Tue Apr 22 11:33:58 2014 guerot_a
+** Last update Tue Apr 22 16:03:23 2014 guerot_a
 */
 
 #ifndef		MYIRC_H
@@ -21,9 +21,10 @@
 # include "sockstream.h"
 # include "utils.h"
 # include "user.h"
+# include "servermsg.h"
 
 int		str_match(char *str, char *name);
-int		available_name(channel_t* channel, char* name);
+int		available_name(char* name);
 void		name_user(channel_t* channel, char* name);
 int		find_empty_unregistered(server_t* server);
 void		parse_args(char **tab, char *str);
@@ -52,7 +53,7 @@ void		manage_invalidcmd(request_t* request);
 /* MANAGE IO */
 
 void		recv_sockstream(sockstream_t* sstream);
-void		send_sockstream(sockstream_t* sstream);
+/* void		send_sockstream(sockstream_t* sstream); */
 void		refresh_sets(server_t* server, socketset_t* sets);
 void		manage_io_user(server_t* server, socketset_t* sets);
 void		manage_io_userchan(server_t* server, socketset_t* sets);
