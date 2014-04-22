@@ -5,13 +5,13 @@
 ** Login   <pinon_a@epitech.net>
 ** 
 ** Started on  Tue Apr 22 14:17:55 2014 pinon
-** Last update Tue Apr 22 17:19:16 2014 pinon
+** Last update Tue Apr 22 19:20:21 2014 pinon
 */
 
 #ifndef CLIENT_H
 # define CLIENT_H
 
-# define IO_SIZE 512
+# include "sockstream.h"
 
 typedef struct	error_s
 {
@@ -27,7 +27,10 @@ typedef struct	cmd_s
 
 typedef struct	client_s
 {
-  int	socket;
+  sockstream_t* sockstream;
 }		client_t;
+
+sockstream_t*   new_sockstream(int socket);
+void		recv_sockstream(sockstream_t* sstream);
 
 #endif

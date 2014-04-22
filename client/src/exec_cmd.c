@@ -5,7 +5,7 @@
 ** Login   <pinon_a@epitech.net>
 ** 
 ** Started on  Tue Apr 22 16:29:21 2014 pinon
-** Last update Tue Apr 22 17:13:19 2014 pinon
+** Last update Tue Apr 22 18:21:36 2014 pinon
 */
 
 #include "servermsg.h"
@@ -36,3 +36,4 @@ cmd_t	cmds[] =
     {RPL_USERS, rpl_users},
     {RPL_USERSEND, rpl_usersend}
   };
+

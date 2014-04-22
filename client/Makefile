@@ -5,7 +5,7 @@
 ## Login   <guerot_a@epitech.net>
 ## 
 ## Started on  Sun Mar  2 18:06:05 2014 anthony guerot
-## Last update Tue Apr 22 17:18:07 2014 pinon
+## Last update Tue Apr 22 19:09:19 2014 pinon
 ##
 
 ## FILES
@@ -18,7 +18,8 @@ SRC		=	main		\
 			join_cmd	\
 			part_cmd	\
 			list_cmd	\
-			user_cmd
+			user_cmd	\
+			sockstream
 
 
 SRC_EXT		=	.c

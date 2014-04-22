@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Sat Apr 19 10:51:25 2014 guerot_a
-** Last update Tue Apr 22 16:04:26 2014 pinon
+** Last update Tue Apr 22 19:25:30 2014 pinon
 */
 
 #include <stdio.h>
@@ -20,6 +20,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
+#include "constants.h"
 #include "client.h"
 
 int isnumeric(char *str)
@@ -58,7 +59,7 @@ in_addr_t	get_addr(char *ip)
   in_addr_t ret;
 
   if (strcmp(ip, "localhost") == 0)
-    ret = inet_addr("192.0.0.1");
+    ret = inet_addr("127.0.0.1");
   else
     ret = inet_addr(ip);
   if (ret == (in_addr_t)(-1))
@@ -71,11 +72,12 @@ int	init_client(client_t* client, char **argv)
   struct protoent*	protocol;
   struct sockaddr_in	sin;
   int			port;
+  int			sock;
 
   if (!(port = get_port(argv[1])))
     return (0);
   protocol = getprotobyname("TCP");
-  if ((client->socket = socket(AF_INET, SOCK_STREAM, protocol->p_proto)) < 0)
+  if ((sock = socket(AF_INET, SOCK_STREAM, protocol->p_proto)) < 0)
     {
       printf("Error: init socket failure\n");
       return (0);
@@ -84,12 +86,13 @@ int	init_client(client_t* client, char **argv)
   sin.sin_port = htons(port);
   if ((sin.sin_addr.s_addr = get_addr(argv[0])) == (in_addr_t)(-1))
     return (0);
-  if (connect(client->socket, (const struct sockaddr*)&sin, sizeof(sin)) == -1)
+  if (connect(sock, (const struct sockaddr*)&sin, sizeof(sin)) == -1)
     {
       printf("Error: connect failure\n");
-      close(client->socket);
+      close(sock);
       return (0);
     }
+  client->sockstream = new_sockstream(sock);
   return (1);
 }
 
@@ -110,19 +113,14 @@ void	format_buffer(char* buffer, char* formated_buffer)
 void*	client_read(void *p)
 {
   client_t*	client;
-  char		buffer[IO_SIZE + 1];
 
   client = (client_t*)p;
   while (42)
     {
-      memset(buffer, 0, IO_SIZE + 1);
-      if (read(client->socket, &buffer, IO_SIZE) <= 0)
-	{
-	  printf("server disconnected\n");
-	  return (NULL);
-	}
-      else
-	printf("read = %s\n", buffer);
+      recv_sockstream(client->sockstream);
+      write(1, client->sockstream->rbuff, client->sockstream->rsize);
+      client->sockstream->rsize = 0;
+      client->sockstream->rstart = 0;
     }
   return (NULL);
 }
@@ -137,14 +135,13 @@ void*	client_write(void *p)
   client = (client_t*)p;
   while (42)
     {
-      system("clear");
       write(1, "client >", 8);
       memset(buffer, 0, IO_SIZE + 1);
       memset(formated_buffer, ' ', IO_SIZE + 1);
       size = read(0, buffer, IO_SIZE);
       fflush(0);
       format_buffer(buffer, formated_buffer);
-      write(client->socket, formated_buffer, size);
+      write(client->sockstream->socket, formated_buffer, size);
     }
   return (NULL);
 }
