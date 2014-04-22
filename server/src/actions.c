@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Mon Apr 21 19:30:39 2014 guerot_a
-** Last update Tue Apr 22 18:32:58 2014 guerot_a
+** Last update Tue Apr 22 18:47:51 2014 guerot_a
 */
 
 #include "myirc.h"
@@ -20,10 +20,10 @@ void	send_servermsg(int socket, int msgid,
   if (data != NULL)
     {
       strncat(buff, data,
-	      MIN(IO_SIZE - RPL_LIST - 1, datalen));
+	      MIN(IO_SIZE - RPL_LIST, datalen));
     }
-  strncat(buff, "\n", IO_SIZE - RPL_LIST);
   write(socket, buff, strnlen(buff, IO_SIZE));
+  write(socket, "\0", 1);
 }
 
 /* IRC COMMANDS */
