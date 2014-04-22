@@ -5,7 +5,7 @@
 ## Login   <guerot_a@epitech.net>
 ## 
 ## Started on  Sun Mar  2 18:06:05 2014 anthony guerot
-## Last update Tue Apr 22 00:12:31 2014 guerot_a
+## Last update Tue Apr 22 11:15:18 2014 guerot_a
 ##
 
 ## FILES
@@ -13,7 +13,7 @@
 NAME		=	server
 
 SRC		=	main			\
-			action_unregistered	\
+			actions			\
 			buffer_flush		\
 			channel			\
 			init			\

@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:04:36 2014 guerot_a
-** Last update Tue Apr 22 00:05:00 2014 guerot_a
+** Last update Tue Apr 22 11:13:53 2014 guerot_a
 */
 
 #include "myirc.h"
@@ -42,7 +42,7 @@ void	manage_server_datas(server_t* server)
 	{
 	  request.user = user;
 	  request.server = server;
-	  manage_request_unregistered(&request);
+	  manage_request_user(&request, 0);
 	}
       INC(curr);
     }

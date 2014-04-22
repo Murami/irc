@@ -5,22 +5,23 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Sat Apr 19 10:05:36 2014 pinon
-** Last update Mon Apr 21 23:45:29 2014 guerot_a
+** Last update Tue Apr 22 11:07:51 2014 guerot_a
 */
 
 #include "myirc.h"
 
 pair_request_t	pairs[] =
   {
-    {"/nick", REQ_NICK},
-    {"/join", REQ_JOIN},
-    {"/list", REQ_LIST},
-    {"/part", REQ_PART},
-    {"/users", REQ_USERS},
-    {"/msg", REQ_MSG},
-    {"/send_file", REQ_SEND_FILE},
-    {"/accept_file", REQ_ACCEPT_FILE},
-    {NULL, 0}
+    {"/nick", REQ_NICK, manage_nickname, 1},
+    {"/join", REQ_JOIN, manage_join, 0},
+    {"/list", REQ_LIST, manage_list, 1},
+    {"/part", REQ_PART, manage_part, 1},
+    {"/users", REQ_USERS, manage_users, 1},
+    {"/msg", REQ_MSG, manage_msg, 1},
+    {"/send_file", REQ_SEND_FILE, manage_send_file, 1},
+    {"/accept_file", REQ_ACCEPT_FILE, manage_accept_file, 1},
+    {NULL, REQ_MSG_ALL, manage_msg_all, 1},
+    {NULL, 0, NULL, 0}
   };
 
 void parse_args(char **tab, char *str)
