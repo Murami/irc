@@ -5,7 +5,8 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:52:04 2014 pinon
-** Last update Tue Apr 22 16:03:23 2014 guerot_a
+** Last update Tue Apr 22 16:14:33 2014 guerot_a
+** Last update Tue Apr 22 11:51:01 2014 pinon
 */
 
 #ifndef		MYIRC_H
@@ -28,7 +29,7 @@ int		available_name(char* name);
 void		name_user(channel_t* channel, char* name);
 int		find_empty_unregistered(server_t* server);
 void		parse_args(char **tab, char *str);
-int		parse_request(sockstream_t* stream, request_t* request);
+int		parse_request(servert_t*, user_t* user, request_t* request);
 void		manage_server_datas(server_t* server);
 void		user_join_channel(server_t* server,
 				  channel_t* channel,
