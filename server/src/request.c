@@ -5,7 +5,7 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Sat Apr 19 10:05:36 2014 pinon
-** Last update Tue Apr 22 12:11:37 2014 pinon
+** Last update Tue Apr 22 16:45:01 2014 guerot_a
 */
 
 #include "myirc.h"
@@ -32,7 +32,7 @@ void parse_args(char **tab, char *str)
   tab[1] = strtok(NULL, " ");
 }
 
-int	init_request(server_t* server, user_t* user, request_t* request)
+void	init_request(server_t* server, user_t* user, request_t* request)
 {
   int	i;
 
@@ -81,6 +81,8 @@ void	get_request_type(user_t* user, request_t* request)
 
 void	set_cursor(user_t* user, request_t* request)
 {
+  int	offset;
+
   if (!strchr(request->buffer, '\n'))
     {
       user->sockstream->rsize = 0;
@@ -98,14 +100,10 @@ void	set_cursor(user_t* user, request_t* request)
 
 int	parse_request(server_t* server, user_t* user, request_t* request)
 {
-  int	i;
-  int	j;
-  int	offset;
-
   if (user->sockstream->rsize == 0)
     return (0);
   init_request(server, user, request);
   get_request_type(user, request);
-  ser_cursor(user, request);
+  set_cursor(user, request);
   return (1);
 }

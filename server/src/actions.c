@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Mon Apr 21 19:30:39 2014 guerot_a
-** Last update Tue Apr 22 16:04:27 2014 guerot_a
+** Last update Tue Apr 22 16:46:26 2014 guerot_a
 */
 
 #include "myirc.h"
@@ -36,7 +36,7 @@ void	manage_nickname(request_t* req)
 		     ERR_NONICKNAMEGIVEN, NULL, 0);
       return;
     }
-  if (!(available_name(req->arg1)))
+  if (!(available_name(req->server, req->arg1)))
     {
       send_servermsg(req->user->sockstream->socket,
 		     ERR_NICKNAMEINUSE, NULL, 0);
@@ -71,7 +71,7 @@ void	manage_list(request_t* req)
 
 void	manage_join(request_t* req)
 {
-  channel_t	chan;
+  channel_t*	chan;
 
   if (req->arg1 == NULL)
     {
@@ -93,18 +93,18 @@ void	manage_join(request_t* req)
 
 void	manage_part(request_t* req)
 {
-  if (req->user->chan == NULL)
+  if (req->user->channel == NULL)
     {
       send_servermsg(req->user->sockstream->socket,
-		     RPL_NOTONCHANNEL, NULL, 0);
+		     ERR_NOTONCHANNEL, NULL, 0);
     }
-  req->user->chan = NULL;
+  req->user->channel = NULL;
   send_servermsg(req->user->sockstream->socket,
 		 RPL_PARTOK, NULL, 0);
   /* IL FAUT PREVENIR TOUS LES USERS DU CHAN AVEC RPL_NEWPART */
 }
 
-void	manage_users(request_t* request)
+void	manage_users(request_t* req)
 {
   list_elm_t*	curr;
   user_t*	user;
@@ -114,12 +114,12 @@ void	manage_users(request_t* request)
 		 RPL_USERSSTART, NULL, 0);
 
   /* USERS */
-  curr = LISTBEGIN(server->users);
-  while (curr != LISTEND(server->users))
+  curr = LISTBEGIN(req->server->users);
+  while (curr != LISTEND(req->server->users))
     {
-      if (user->chan != NULL)
+      if (user->channel != NULL)
 	{
-	  user = (channel_t*)curr->data;
+	  user = (user_t*)curr->data;
 	  send_servermsg(req->user->sockstream->socket,
 			 RPL_USERS, user->name, U_NAME_SIZE);
 	}
@@ -135,21 +135,21 @@ void	manage_msg(request_t* req)
 {
   user_t*	user;
 
-  if (arg1 == NULL || arg2 == NULL)
+  if (req->arg1 == NULL || req->arg2 == NULL)
     {
-      send_servermsg(req->user->sockstream,
+      send_servermsg(req->user->sockstream->socket,
 		     ERR_NEEDMOREPARAM, NULL, 0);
       return;
     }
-  if (!(user = find_user(req->arg1)))
+  if (!(user = find_user(req->server, req->arg1)))
     {
-      send_servermsg(req->user->socketstream,
+      send_servermsg(req->user->sockstream->socket,
 		     ERR_NOSUCHUSER, NULL, 0);
       return;
     }
-  send_servermsg(user, RPL_MSGSENDER,
+  send_servermsg(user->sockstream->socket, RPL_MSGSENDER,
 		 req->user->name, IO_SIZE);
-  send_servermsg(user, RPL_MSG, req->arg2, IO_SIZE);
+  send_servermsg(user->sockstream->socket, RPL_MSG, req->arg2, IO_SIZE);
 }
 
 void	manage_msg_all(request_t* request)

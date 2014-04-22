@@ -5,7 +5,7 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:52:04 2014 pinon
-** Last update Tue Apr 22 16:14:33 2014 guerot_a
+** Last update Tue Apr 22 16:46:02 2014 guerot_a
 ** Last update Tue Apr 22 11:51:01 2014 pinon
 */
 
@@ -25,17 +25,14 @@
 # include "servermsg.h"
 
 int		str_match(char *str, char *name);
-int		available_name(char* name);
+int		available_name(server_t* server, char* name);
 void		name_user(channel_t* channel, char* name);
-int		find_empty_unregistered(server_t* server);
+user_t*		find_user(server_t* server, const char* name);
+channel_t*	find_channel(server_t* server, const char* name);
 void		parse_args(char **tab, char *str);
-int		parse_request(servert_t*, user_t* user, request_t* request);
+int		parse_request(server_t*, user_t* user, request_t* request);
 void		manage_server_datas(server_t* server);
-void		user_join_channel(server_t* server,
-				  channel_t* channel,
-				  list_elm_t* e_user);
 void		accept_client(server_t* server);
-
 
 /* IRC COMMANDS */
 

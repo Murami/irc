@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:04:36 2014 guerot_a
-** Last update Tue Apr 22 11:49:55 2014 guerot_a
+** Last update Tue Apr 22 16:39:52 2014 guerot_a
 */
 
 #include "myirc.h"
@@ -20,7 +20,7 @@ void	manage_server_datas(server_t* server)
   while (curr != LISTEND(server->users))
     {
       user = (user_t*)curr->data;
-      while (parse_request(user->sockstream, &request))
+      while (parse_request(server, user, &request))
 	{
 	  request.user = user;
 	  request.server = server;

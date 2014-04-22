@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Mon Apr 21 19:33:03 2014 guerot_a
-** Last update Tue Apr 22 14:19:40 2014 guerot_a
+** Last update Tue Apr 22 16:40:33 2014 guerot_a
 */
 
 #include "myirc.h"
@@ -49,31 +49,6 @@ void	manage_io_user(server_t* server, socketset_t* sets)
     }
 }
 
-void	manage_io_userchan(server_t* server, socketset_t* sets)
-{
-  list_elm_t*	currchan;
-  list_elm_t*	curruser;
-  channel_t*	chan;
-  user_t*	user;
-
-  currchan = LISTBEGIN(server->chans);
-  while (currchan != LISTEND(server->chans))
-    {
-      chan = (channel_t*)currchan->data;
-      curruser = LISTBEGIN(chan->users);
-      while (curruser != LISTEND(chan->users))
-	{
-	  user = (user_t*)curruser->data;
-	  if (FD_ISSET(user->sockstream->socket, &sets->read_set))
-	    recv_sockstream(user->sockstream);
-	  /* if (FD_ISSET(user->sockstream->socket, &sets->write_set)) */
-	  /*   send_sockstream(user->sockstream); */
-	  INC(curruser);
-	}
-      INC(currchan);
-    }
-}
-
 void	manage_io_listen(server_t* server, socketset_t* sets)
 {
   if (FD_ISSET(server->sock, &sets->read_set))
@@ -83,6 +58,5 @@ void	manage_io_listen(server_t* server, socketset_t* sets)
 void	manage_io(server_t* server, socketset_t* sets)
 {
   manage_io_user(server, sets);
-  manage_io_userchan(server, sets);
   manage_io_listen(server, sets);
 }

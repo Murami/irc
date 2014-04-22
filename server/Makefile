@@ -5,7 +5,7 @@
 ## Login   <guerot_a@epitech.net>
 ## 
 ## Started on  Sun Mar  2 18:06:05 2014 anthony guerot
-## Last update Tue Apr 22 11:29:06 2014 guerot_a
+## Last update Tue Apr 22 16:28:22 2014 guerot_a
 ##
 
 ## FILES
@@ -44,7 +44,7 @@ CFLAGS		=	-Wall		\
 
 ## LINKAGE
 
-LIB		=	dl
+LIB		=
 
 DLIB		=
 
@@ -52,7 +52,7 @@ LDFLAGS		=
 
 ## RUNS
 
-CC		=	g++
+CC		=	gcc
 RM		=	rm -rf
 MD		=	mkdir -p
 
