@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Mon Apr 21 19:30:39 2014 guerot_a
-** Last update Tue Apr 22 16:46:26 2014 guerot_a
+** Last update Tue Apr 22 18:03:41 2014 guerot_a
 */
 
 #include "myirc.h"
@@ -16,7 +16,7 @@ void	send_servermsg(int socket, int msgid,
   char	buff[IO_SIZE + 1];
 
   memset(buff, 0, IO_SIZE);
-  snprintf(buff, 3, "%03d", msgid);
+  snprintf(buff, 4, "%03d", msgid);
   if (data != NULL)
     {
       strncat(buff, data,
@@ -30,6 +30,8 @@ void	send_servermsg(int socket, int msgid,
 
 void	manage_nickname(request_t* req)
 {
+  printf("nick\n");
+  /* printf("%s\n", req->arg1); */
   if (req->arg1 == NULL)
     {
       send_servermsg(req->user->sockstream->socket,
@@ -50,6 +52,7 @@ void	manage_list(request_t* req)
   list_elm_t*	curr;
   channel_t*	chan;
 
+  printf("nick\n");
   /* LISTSTART */
   send_servermsg(req->user->sockstream->socket,
 		 RPL_LISTSTART, NULL, 0);
@@ -73,6 +76,7 @@ void	manage_join(request_t* req)
 {
   channel_t*	chan;
 
+  printf("join\n");
   if (req->arg1 == NULL)
     {
       send_servermsg(req->user->sockstream->socket,
@@ -93,6 +97,7 @@ void	manage_join(request_t* req)
 
 void	manage_part(request_t* req)
 {
+  printf("part\n");
   if (req->user->channel == NULL)
     {
       send_servermsg(req->user->sockstream->socket,
@@ -109,6 +114,7 @@ void	manage_users(request_t* req)
   list_elm_t*	curr;
   user_t*	user;
 
+  printf("users\n");
   /* USERSSTART */
   send_servermsg(req->user->sockstream->socket,
 		 RPL_USERSSTART, NULL, 0);
@@ -117,9 +123,9 @@ void	manage_users(request_t* req)
   curr = LISTBEGIN(req->server->users);
   while (curr != LISTEND(req->server->users))
     {
+      user = (user_t*)curr->data;
       if (user->channel != NULL)
-	{
-	  user = (user_t*)curr->data;
+      	{
 	  send_servermsg(req->user->sockstream->socket,
 			 RPL_USERS, user->name, U_NAME_SIZE);
 	}
@@ -135,6 +141,7 @@ void	manage_msg(request_t* req)
 {
   user_t*	user;
 
+  printf("msg\n");
   if (req->arg1 == NULL || req->arg2 == NULL)
     {
       send_servermsg(req->user->sockstream->socket,

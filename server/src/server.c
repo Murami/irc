@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Mon Apr 21 19:32:20 2014 guerot_a
-** Last update Tue Apr 22 11:34:11 2014 guerot_a
+** Last update Tue Apr 22 17:09:11 2014 guerot_a
 */
 
 #include "myirc.h"
@@ -45,6 +45,7 @@ void	accept_client(server_t* server)
 {
   int		client_sock;
 
+  printf("new client\n");
   client_sock = accept(server->sock, NULL, NULL);
   server->sockmax = MAX(client_sock, server->sockmax);
   add_user(server, client_sock);

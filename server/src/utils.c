@@ -5,7 +5,7 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Sat Apr 19 09:42:33 2014 pinon
-** Last update Tue Apr 22 16:47:56 2014 guerot_a
+** Last update Tue Apr 22 17:51:28 2014 guerot_a
 */
 
 #include "myirc.h"
@@ -40,7 +40,7 @@ int		available_name(server_t* server, char* name)
   return (1);
 }
 
-channel_t*	find_channel(server_t* server, const char* name)
+channel_t*	find_channel(server_t* server, /*const*/ char* name)
 {
   list_elm_t*	curr;
   channel_t*	chan;
@@ -49,6 +49,8 @@ channel_t*	find_channel(server_t* server, const char* name)
   while (curr != LISTEND(server->chans))
     {
       chan = (channel_t*)curr->data;
+      /* printf("%s\n", chan->name); */
+      printf("%s -- %s -- %d\n", name, chan->name, strncmp(name, chan->name, U_NAME_SIZE));
       if (strncmp(name, chan->name, U_NAME_SIZE) == 0)
 	return (curr->data);
       INC(curr);

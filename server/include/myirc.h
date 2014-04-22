@@ -5,7 +5,7 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:52:04 2014 pinon
-** Last update Tue Apr 22 16:46:02 2014 guerot_a
+** Last update Tue Apr 22 17:51:19 2014 guerot_a
 ** Last update Tue Apr 22 11:51:01 2014 pinon
 */
 
@@ -28,8 +28,8 @@ int		str_match(char *str, char *name);
 int		available_name(server_t* server, char* name);
 void		name_user(channel_t* channel, char* name);
 user_t*		find_user(server_t* server, const char* name);
-channel_t*	find_channel(server_t* server, const char* name);
-void		parse_args(char **tab, char *str);
+channel_t*	find_channel(server_t* server, /*const*/ char* name);
+void		parse_args(char** arg1, char** arg2, char *str);
 int		parse_request(server_t*, user_t* user, request_t* request);
 void		manage_server_datas(server_t* server);
 void		accept_client(server_t* server);

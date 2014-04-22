@@ -5,16 +5,16 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Sat Apr 19 10:05:36 2014 pinon
-** Last update Tue Apr 22 16:45:01 2014 guerot_a
+** Last update Tue Apr 22 17:58:53 2014 guerot_a
 */
 
 #include "myirc.h"
 
 pair_request_t	pairs[] =
   {
-    {"/nick", REQ_NICK, manage_nickname, 1},
+    {"/nick", REQ_NICK, manage_nickname, 0},
     {"/join", REQ_JOIN, manage_join, 0},
-    {"/list", REQ_LIST, manage_list, 1},
+    {"/list", REQ_LIST, manage_list, 0},
     {"/part", REQ_PART, manage_part, 1},
     {"/users", REQ_USERS, manage_users, 1},
     {"/msg", REQ_MSG, manage_msg, 1},
@@ -24,12 +24,12 @@ pair_request_t	pairs[] =
     {NULL, 0, NULL, 0}
   };
 
-void parse_args(char **tab, char *str)
+void parse_args(char **arg1, char** arg2, char *str)
 {
-  str[index(str, '\n') - str + 1] = '\0';
+  str[index(str, '\n') - str] = '\0';
   strtok(str, " ");
-  tab[0] = strtok(NULL, " ");
-  tab[1] = strtok(NULL, " ");
+  *arg1 = strtok(NULL, " ");
+  *arg2 = strtok(NULL, " ");
 }
 
 void	init_request(server_t* server, user_t* user, request_t* request)
@@ -40,7 +40,7 @@ void	init_request(server_t* server, user_t* user, request_t* request)
   request->arg1 = NULL;
   request->arg2 = NULL;
   request->channelaction = 0;
-  request->func = NULL;
+  request->func = manage_invalidcmd;
   request->user = user;
   request->server = server;
   memset(request->buffer, 0, REQUEST_SIZE);
@@ -105,5 +105,6 @@ int	parse_request(server_t* server, user_t* user, request_t* request)
   init_request(server, user, request);
   get_request_type(user, request);
   set_cursor(user, request);
+  parse_args(&request->arg1, &request->arg2, request->buffer);
   return (1);
 }
