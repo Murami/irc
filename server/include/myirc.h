@@ -5,7 +5,7 @@
 ** Login   <pinon_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:52:04 2014 pinon
-** Last update Tue Apr 22 11:14:49 2014 guerot_a
+** Last update Tue Apr 22 11:25:02 2014 guerot_a
 */
 
 #ifndef		MYIRC_H
@@ -35,6 +35,7 @@ void		send_sockstream(sockstream_t* sstream);
 
 /* IRC COMMANDS */
 
+void		manage_request_user(request_t* request, int inchannel);
 void		manage_nickname(request_t* request);
 void		manage_list(request_t* request);
 void		manage_join(request_t* request);
@@ -48,22 +49,23 @@ void		manage_invalidcmd(request_t* request);
 
 /* */
 
-void		manage_request_user(request_t* request, int inchannel);
-
 channel_t*	new_channel(char* channel_name);
 void		user_join_channel(server_t* server,
 				  channel_t* channel,
 				  list_elm_t* e_user);
 void		add_channel(server_t* server, char* channel_name);
 list_t*		new_list();
-void		refresh_socket_sets(server_t* server,
-				    socketset_t* sets);
-void		manage_io_sockets_unregistered(server_t* server,
-					       socketset_t* sets);
-void		manage_io_sockets_listen(server_t* server,
-					 socketset_t* sets);
-void		manage_io_sockets(server_t* server,
-				  socketset_t* sets);
+
+/* MANAGE IO */
+
+void		refresh_sets(server_t* server, socketset_t* sets);
+void		manage_io_user(server_t* server, socketset_t* sets);
+void		manage_io_userchan(server_t* server, socketset_t* sets);
+void		manage_io_listen(server_t* server, socketset_t* sets);
+void		manage_io(server_t* server, socketset_t* sets);
+
+/* */
+
 void		init_user_list(server_t* server);
 void		init_channel_list(server_t* server);
 void		init_server(server_t* server, short port);

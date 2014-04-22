@@ -5,7 +5,7 @@
 ** Login   <guerot_a@epitech.net>
 **
 ** Started on  Fri Apr 18 13:04:36 2014 guerot_a
-** Last update Tue Apr 22 11:13:53 2014 guerot_a
+** Last update Tue Apr 22 11:27:12 2014 guerot_a
 */
 
 #include "myirc.h"
@@ -58,14 +58,14 @@ int	main(int argc, char **argv)
   init_server(&server, atoi(argv[1]));
   while (42)
     {
-      refresh_socket_sets(&server, &sets);
+      refresh_sets(&server, &sets);
       select_error = select(server.sockmax + 1,
 			    &sets.read_set,
 			    /* &sets.write_set, */
 			    NULL,
 			    NULL, NULL);
       (void) select_error;
-      manage_io_sockets(&server, &sets);
+      manage_io(&server, &sets);
       manage_server_datas(&server);
       usleep(100);
     }
